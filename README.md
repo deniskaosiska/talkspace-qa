@@ -15,13 +15,14 @@ Senior Full Stack QA Engineer homework submission.
 Risk-based test plan for the request lifecycle feature (create → pending → external status update → 5s job email/expiry).
 
 - **Primary deliverable:** [`part1/Part1_Request_Lifecycle_RBT_Test_Plan.xlsx`](part1/Part1_Request_Lifecycle_RBT_Test_Plan.xlsx)
+- **Submission body:** [`part1/README.md`](part1/README.md) — full test case list (25) + release metrics / monitoring flow
 - **Markdown reference:** [`part1/Part1_Request_Lifecycle_RBT_Test_Plan.md`](part1/Part1_Request_Lifecycle_RBT_Test_Plan.md)
 
 Excel workbook sheets:
 
-- **Test Cases** — 25 cases grouped by action (API, jobs, DB, UI, E2E)
+- **Test Cases** — 25 cases grouped by action (API, jobs, DB, UI, E2E); 6 regression smoke
 - **Submission Notes** — assumptions, ambiguities, risks, feature feedback
-- **Release Metrics** — prod dashboard metrics, logs, alerts
+- **Release Metrics** — prod dashboard metrics (M1–M16), logs (L1–L12), alerts (A1–A8), release gate
 - **Action Summary**, **Risk Register**, **Bug Log**
 
 ## Part 2
