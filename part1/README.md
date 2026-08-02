@@ -11,9 +11,10 @@
 
 ## Quick start for reviewers
 
-1. Open **Submission Notes** — assumptions, ambiguities, feature feedback
-2. Open **Test Cases** — 25 RBT cases grouped by action; filter `Regression?=Yes` for the 6-case smoke pack
-3. Open **Release Metrics** — post-release monitoring blueprint (metrics, logs, alerts, release gate)
+1. **This README** — test case list, assumptions/risks/feedback, release metrics
+2. Open **Submission Notes** in Excel — same assumptions, ambiguities, risks, feature feedback (expanded)
+3. Open **Test Cases** — 25 RBT cases grouped by action; filter `Regression?=Yes` for the 6-case smoke pack
+4. Open **Release Metrics** — post-release monitoring blueprint (metrics, logs, alerts, release gate)
 
 ## Scope covered
 
@@ -21,6 +22,63 @@
 - External ~2 min status update (approved / denied / stay pending)
 - 5s scheduled job: approval email + 30m expiry
 - Client + internal APIs, DB (`REQUESTS`, `AUDIT_LOGS`, `CRON_TASK_HISTORY`), app logs
+
+---
+
+## Assumptions, risks, ambiguities & feature feedback
+
+Full detail is in the **Submission Notes** sheet. Below is the written submission body the assignment asks for.
+
+### Assumptions
+
+| ID | Assumption |
+|----|------------|
+| A1 | External ~2m job is a separate offline process; may set approved, denied, or leave pending. Simulated via wait or `PATCH /internal/requests/{id}/status` if no dedicated trigger. |
+| A2 | `POST /internal/jobs/process-requests` triggers the 5s scheduled work (email + expiry), not the 2m external updater — unless product confirms otherwise. |
+| A3 | `email_sent=true` is set only after successful email dispatch; failed sends leave false and retry on next job run. |
+| A4 | `expired` and `denied` are terminal states; backward transitions rejected unless spec defines otherwise. |
+| A5 | QA may backdate `created_at` / `status_updated_at` in DB to avoid waiting 30 minutes for expiry tests. |
+| A6 | Primary email oracle: `REQUESTS.email_sent` + `AUDIT_LOGS` + app logs; secondary: mail catcher if available. |
+| A7 | `/internal/*` endpoints require service auth; unauthenticated access in QA is a Critical finding. |
+| A8 | UI submit produces the same `REQUESTS` row as `POST /api/requests` with valid `userId`. |
+
+### Ambiguities / questions for product
+
+| ID | Question |
+|----|----------|
+| Q1 | What business rules drive approved vs denied vs remain pending after the ~2m external job? |
+| Q2 | Is `POST /internal/jobs/process-requests` the 2m updater, the 5s scheduler, or both? |
+| Q3 | Is `REQUESTS.priority` used for job ordering or SLA, or stored only? |
+| Q4 | Which timestamp drives expiry — `created_at` or `status_updated_at`? Inclusive or exclusive 30m boundary? |
+| Q5 | Email failure retry policy — max attempts, dead-letter, partial batch failure handling? |
+| Q6 | Authn/Authz model for `/internal/*` — API key, mTLS, network-only? |
+
+### Top risks
+
+| ID | Risk | Impact |
+|----|------|--------|
+| R1 | Approved never emailed or emailed twice | User trust / compliance |
+| R2 | Pending never expires after 30m | Stale queue / capacity |
+| R3 | Denied/expired incorrectly emailed | Wrong business outcome |
+| R5 | 5s job not idempotent under overlap / multi-server | Duplicate emails |
+
+*(Full risk register with mitigations and linked test cases: **Risk Register** sheet.)*
+
+### Feature feedback & improvements
+
+| ID | Suggestion |
+|----|------------|
+| F1 | Add a state machine diagram documenting legal status transitions and terminal states. |
+| F2 | Document which endpoint maps to the 2m external job vs the 5s scheduler in OpenAPI. |
+| F3 | Use row-level locking or `UPDATE … WHERE email_sent=false RETURNING` to prevent duplicate emails under concurrent cron. |
+| F4 | Do not set `email_sent=true` until email provider ACK; define retry/backoff explicitly. |
+| F5 | Add QA test hooks: time-travel endpoint or seed script for pending/approved/expired states (avoids raw DB writes). |
+| F6 | Expose `GET /internal/jobs/history` filters (`job_name`, `limit`) for automation and support. |
+
+### Execution guidance
+
+- Run `Regression?=Yes` (6 smoke cases) first. P0 before P1. P2 (`N-PERF-01`, `F-REQ-06`) is stretch/post-MVP.
+- Automate API + Integration (job+DB) cases first; keep external ~2m timing (`F-EXT-01`, `N-TIME-02`) manual unless clock can be controlled.
 
 ---
 
