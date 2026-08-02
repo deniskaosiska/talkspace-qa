@@ -1,4 +1,4 @@
-import { expect, Locator, Page } from '@playwright/test';
+import { Locator, Page } from '@playwright/test';
 
 export abstract class BasePage {
   constructor(protected readonly page: Page) {}
@@ -9,9 +9,5 @@ export abstract class BasePage {
 
   protected locatorByLabel(label: string): Locator {
     return this.page.getByLabel(label, { exact: true });
-  }
-
-  protected async expectVisibleText(text: string | RegExp): Promise<void> {
-    await expect(this.page.getByText(text)).toBeVisible();
   }
 }

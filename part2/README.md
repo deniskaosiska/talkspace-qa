@@ -2,6 +2,42 @@
 
 Talkspace take-home **Part 2**: automated tests for [autoswitchpt signup](https://app.canary.talkspace.com/signup/autoswitchpt).
 
+## Overview
+
+A small, production-style Playwright suite — **5 tests**, one spec file, three page objects. Built for a take-home, not a platform.
+
+**Design principles**
+
+| Principle | How it shows up |
+|-----------|-----------------|
+| **Right-sized** | No Page Factory, no custom reporter, no API layer — only what 5 signup tests need |
+| **POM where it helps** | Tests call `signupPage.register()`, not raw locators |
+| **Playwright-native waits** | No `waitForTimeout`; `expect` auto-retry + `expect.poll()` for Mailinator only |
+| **Strong locators** | `getByRole`, `getByLabel`, `getByText` — no XPath or CSS chains |
+| **Debuggable failures** | Screenshot, video, trace, ARIA snapshot + log on failure |
+| **Canary-aware** | OTP vs link verification A/B handled with `registerUntilOtpFlow()` retries |
+
+**Intentionally not built** (would be over-engineering for this scope)
+
+- Multi-browser matrix, sharding, or parallel signup workers
+- Separate API/client abstraction layers
+- Custom timeout config files — UI timeouts live in `playwright.config.ts`
+- Page objects for every static label or footer link
+- CI pipeline (config is CI-ready; workflow left to the reviewer’s infra)
+
+**Layout (~15 source files)**
+
+```
+tests/signup.spec.ts          ← 5 scenarios, business-readable
+pages/                        ← SignupPage, VerificationPage, StateSelect
+fixtures/test.fixture.ts      ← page objects, freshUser, failure attachments
+data/                         ← weakPassword, invalidOtpCode, default state
+constants/                    ← URLs, UI copy, validation messages
+utils/                        ← Faker user factory, Mailinator OTP helper
+```
+
+---
+
 ## Verification flow (Phase 0 findings)
 
 | Step | Behavior |
@@ -38,18 +74,6 @@ npm run test:mail
 npm run test:report
 ```
 
-## Project structure
-
-```
-playwright/
-├── pages/           # POM — SignupPage, VerificationPage, StateSelect
-├── tests/           # signup.spec.ts (5 scenarios)
-├── fixtures/        # page objects + freshUser + failure logging
-├── utils/           # faker, mail OTP fetch (expect.poll)
-├── constants/       # URLs, validation messages
-└── data/            # defaults (state, weak password)
-```
-
 ## Five tests
 
 1. **Positive** — register → email verification screen (OTP or link flow)
@@ -57,6 +81,14 @@ playwright/
 3. **Negative** — empty form validation (email, password, nickname, state)
 4. **Negative** — password shorter than 8 characters
 5. **Negative** — invalid OTP after successful registration
+
+## Test data
+
+| Constant | File | Purpose |
+|----------|------|---------|
+| `weakPassword` | `data/users.ts` | Password min-length negative |
+| `invalidOtpCode` | `data/verification.ts` | OTP rejection negative |
+| `freshUser` | fixture | Unique Mailinator email per test via Faker |
 
 ## Email strategy
 

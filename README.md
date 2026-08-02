@@ -28,6 +28,8 @@ Excel workbook sheets:
 
 Playwright + TypeScript signup automation for `https://app.canary.talkspace.com/signup/autoswitchpt`.
 
+**Overview:** 5 tests, POM, Playwright-native waits, Mailinator OTP — lean and production-style (see [`part2/README.md`](part2/README.md)).
+
 ```bash
 cd part2/playwright
 npm install

@@ -1,4 +1,5 @@
 import { weakPassword } from '../data/users';
+import { invalidOtpCode } from '../data/verification';
 import { createFreshUser } from '../fixtures/user.fixture';
 import { fetchVerificationCode } from '../utils/mail';
 import { test } from '../fixtures/test.fixture';
@@ -59,7 +60,7 @@ test.describe('Talkspace autoswitchpt signup', () => {
     const user = await signupPage.registerUntilOtpFlow(createFreshUser);
     await verificationPage.expectOtpFlow(user.email);
 
-    await verificationPage.verify('000000');
+    await verificationPage.verify(invalidOtpCode);
     await verificationPage.expectInvalidCodeError();
   });
 });

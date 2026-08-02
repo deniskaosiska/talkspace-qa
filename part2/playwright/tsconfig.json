@@ -8,16 +8,7 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
-    "types": ["node"],
-    "baseUrl": ".",
-    "paths": {
-      "@pages/*": ["pages/*"],
-      "@fixtures/*": ["fixtures/*"],
-      "@utils/*": ["utils/*"],
-      "@constants/*": ["constants/*"],
-      "@types/*": ["types/*"],
-      "@data/*": ["data/*"]
-    }
+    "types": ["node"]
   },
   "include": ["**/*.ts"]
 }
