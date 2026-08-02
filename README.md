@@ -7,7 +7,7 @@ Senior Full Stack QA Engineer homework submission.
 | Part | Folder | Status |
 |------|--------|--------|
 | **Part 1** — Test Plan (written) | [`part1/`](part1/) | Included |
-| Part 2 — Playwright automation | `part2/` | Pending |
+| **Part 2** — Playwright automation | [`part2/playwright/`](part2/playwright/) | Included |
 | Part 3 — AI use reflection | `part3/` | Pending |
 
 ## Part 1
@@ -23,3 +23,19 @@ Excel workbook sheets:
 - **Submission Notes** — assumptions, ambiguities, risks, feature feedback
 - **Release Metrics** — prod dashboard metrics, logs, alerts
 - **Action Summary**, **Risk Register**, **Bug Log**
+
+## Part 2
+
+Playwright + TypeScript signup automation for `https://app.canary.talkspace.com/signup/autoswitchpt`.
+
+```bash
+cd part2/playwright
+npm install
+npx playwright install chromium
+npm test
+```
+
+- **5 tests** — registration, OTP verification, empty form, weak password, invalid OTP
+- **POM** — `SignupPage`, `VerificationPage`, `StateSelectComponent`
+- **Mail** — Mailinator public API for OTP retrieval
+- See [`part2/README.md`](part2/README.md) and [`part2/prompts/playwright-setup.md`](part2/prompts/playwright-setup.md)

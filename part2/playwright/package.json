@@ -1,0 +1,21 @@
+{
+  "name": "talkspace-qa-playwright",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Talkspace take-home Part 2 — signup automation (Playwright + TypeScript)",
+  "scripts": {
+    "test": "playwright test",
+    "test:headed": "playwright test --headed",
+    "test:ui": "playwright test --ui",
+    "test:mail": "playwright test --grep @mail",
+    "test:report": "playwright show-report",
+    "lint": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@faker-js/faker": "^9.9.0",
+    "@playwright/test": "^1.49.1",
+    "@types/node": "^22.10.2",
+    "dotenv": "^16.4.7",
+    "typescript": "^5.7.2"
+  }
+}
