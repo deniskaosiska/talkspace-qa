@@ -8,7 +8,7 @@ Senior Full Stack QA Engineer homework submission.
 |------|--------|--------|
 | **Part 1** — Test Plan (written) | [`part1/`](part1/) | Included |
 | **Part 2** — Playwright automation | [`part2/playwright/`](part2/playwright/) | Included |
-| Part 3 — AI use reflection | `part3/` | Pending |
+| **Part 3** — AI use reflection | [`part3/`](part3/) | Included |
 
 ## Part 1
 
@@ -41,3 +41,10 @@ npm test
 - **POM** — `SignupPage`, `VerificationPage`, `StateSelectComponent`
 - **Mail** — Mailinator public API for OTP retrieval
 - See [`part2/README.md`](part2/README.md) and [`part2/prompts/`](part2/prompts/) (AI prompts used)
+
+## Part 3
+
+AI use reflection (~5 bullet points) for the take-home assignment.
+
+- **Deliverable:** [`part3/AI_USE_REFLECTION.md`](part3/AI_USE_REFLECTION.md)
+- Covers what AI was used for, one wrong/incomplete example, and deliberate overrides
