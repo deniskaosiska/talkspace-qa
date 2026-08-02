@@ -40,4 +40,4 @@ npm test
 - **5 tests** — registration, OTP verification, empty form, weak password, invalid OTP
 - **POM** — `SignupPage`, `VerificationPage`, `StateSelectComponent`
 - **Mail** — Mailinator public API for OTP retrieval
-- See [`part2/README.md`](part2/README.md) and [`part2/prompts/playwright-setup.md`](part2/prompts/playwright-setup.md)
+- See [`part2/README.md`](part2/README.md) and [`part2/prompts/`](part2/prompts/) (AI prompts used)
