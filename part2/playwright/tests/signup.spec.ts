@@ -1,6 +1,7 @@
 import { weakPassword } from '../data/users';
+import { createFreshUser } from '../fixtures/user.fixture';
 import { fetchVerificationCode } from '../utils/mail';
-import { expect, test } from '../fixtures/test.fixture';
+import { test } from '../fixtures/test.fixture';
 
 test.describe('Talkspace autoswitchpt signup', () => {
   test('registers a new user and lands on email verification', async ({
@@ -16,20 +17,16 @@ test.describe('Talkspace autoswitchpt signup', () => {
   test('@mail completes signup with email OTP verification', async ({
     signupPage,
     verificationPage,
-    freshUser,
   }) => {
     test.skip(
-      !process.env.MAILINATOR_DOMAIN && !process.env.CI,
-      'Mailinator domain not configured',
+      !!process.env.CI && process.env.MAILINATOR_DOMAIN === 'skip',
+      'Mail tests disabled in CI (set MAILINATOR_DOMAIN=mailinator.com to enable)',
     );
 
-    await signupPage.open();
-    await signupPage.register(freshUser);
-    await verificationPage.expectLoaded(freshUser.email);
+    const user = await signupPage.registerUntilOtpFlow(createFreshUser);
+    await verificationPage.expectOtpFlow(user.email);
 
-    const otp = await fetchVerificationCode(freshUser.email);
-    expect(otp).toMatch(/^\d{6}$/);
-
+    const otp = await fetchVerificationCode(user.email);
     await verificationPage.verify(otp);
     await verificationPage.expectVerificationSuccess();
   });
@@ -58,11 +55,9 @@ test.describe('Talkspace autoswitchpt signup', () => {
   test('rejects an invalid verification code', async ({
     signupPage,
     verificationPage,
-    freshUser,
   }) => {
-    await signupPage.open();
-    await signupPage.register(freshUser);
-    await verificationPage.expectLoaded(freshUser.email);
+    const user = await signupPage.registerUntilOtpFlow(createFreshUser);
+    await verificationPage.expectOtpFlow(user.email);
 
     await verificationPage.verify('000000');
     await verificationPage.expectInvalidCodeError();

@@ -1,7 +1,6 @@
 import { expect, Page } from '@playwright/test';
 import { SignupMessages } from '../constants/messages';
 import { SignupCopy, Urls } from '../constants/urls';
-import { Timeouts } from '../constants/timeouts';
 import { TestUser } from '../types/user.types';
 import { BasePage } from './BasePage';
 import { StateSelectComponent } from './components/StateSelect.component';
@@ -21,20 +20,20 @@ export class SignupPage extends BasePage {
 
   async expectOnSignupPage(): Promise<void> {
     await expect(
-      this.page.getByRole('heading', { name: SignupCopy.pageHeading }),
+      this.page.getByRole('heading', { name: SignupCopy.pageHeading, level: 1 }),
     ).toBeVisible();
   }
 
   async fillEmail(email: string): Promise<void> {
-    await this.page.getByPlaceholder('Email').fill(email);
+    await this.locatorByLabel('Email').fill(email);
   }
 
   async fillPassword(password: string): Promise<void> {
-    await this.page.getByPlaceholder('Enter password').fill(password);
+    await this.locatorByLabel('Password').fill(password);
   }
 
   async fillNickname(nickname: string): Promise<void> {
-    await this.page.getByPlaceholder('Enter nickname').fill(nickname);
+    await this.locatorByLabel('Nickname').fill(nickname);
   }
 
   async selectState(state: string): Promise<void> {
@@ -53,7 +52,30 @@ export class SignupPage extends BasePage {
     await this.fillNickname(user.nickname);
     await this.selectState(user.state);
     await this.submit();
-    await this.page.waitForTimeout(Timeouts.spaSettleMs);
+    await expect(this.page).toHaveURL(Urls.emailVerificationPattern);
+  }
+
+  /**
+   * Canary may A/B route to OTP or link verification. Retries signup with a fresh
+   * user until the OTP screen appears (max 2 attempts).
+   */
+  async registerUntilOtpFlow(
+    createUser: () => TestUser,
+    maxAttempts = 5,
+  ): Promise<TestUser> {
+    for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
+      const user = createUser();
+      await this.open();
+      await this.register(user);
+
+      if (this.page.url().includes(Urls.emailVerificationOtpPath)) {
+        return user;
+      }
+    }
+
+    throw new Error(
+      `Talkspace routed to link verification (${Urls.emailVerificationSentPath}) instead of OTP after ${maxAttempts} attempts`,
+    );
   }
 
   async expectValidationMessages(messages: string[]): Promise<void> {

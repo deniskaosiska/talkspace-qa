@@ -16,10 +16,11 @@ export default defineConfig({
   reporter: [
     ['list'],
     ['html', { open: 'never', outputFolder: 'playwright-report' }],
+    ['json', { outputFile: 'test-results/results.json' }],
   ],
   use: {
     baseURL: process.env.BASE_URL ?? 'https://app.canary.talkspace.com',
-    trace: 'on-first-retry',
+    trace: 'retain-on-failure',
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
     actionTimeout: 15_000,

@@ -1,5 +1,4 @@
-import { Page } from '@playwright/test';
-import { Timeouts } from '../../constants/timeouts';
+import { expect, Page } from '@playwright/test';
 
 export class StateSelectComponent {
   constructor(private readonly page: Page) {}
@@ -10,20 +9,8 @@ export class StateSelectComponent {
     await stateInput.click();
     await stateInput.fill('');
     await stateInput.pressSequentially(stateName.slice(0, 4), { delay: 40 });
-    await this.page.waitForTimeout(500);
 
-    const option = this.page.getByRole('option', {
-      name: new RegExp(stateName, 'i'),
-    });
-
-    if (await option.count()) {
-      await option.first().click();
-      return;
-    }
-
-    await this.page.keyboard.press('ArrowDown');
-    await this.page.waitForTimeout(200);
+    await expect(this.page.getByText(stateName, { exact: true })).toBeVisible();
     await this.page.keyboard.press('Enter');
-    await this.page.waitForTimeout(Timeouts.spaSettleMs);
   }
 }
